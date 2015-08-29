@@ -1,10 +1,4 @@
-data/
-feeds/
-*.pyc
 build/
 venv/
 dist/
 ftff.egg-info/
-*.xml
-*.swp
-
