@@ -4,6 +4,7 @@ from os import path
 from copy import copy
 import csv, argparse, os
 from schemaprops import SchemaProps
+from collections import namedtuple
 
 SCHEMA_URL = "https://github.com/votinginfoproject/vip-specification/raw/master/vip_spec_v3.0.xsd"
 
@@ -87,6 +88,7 @@ def process_db_sub_elems(elem, elem_fields):
 
     sub_elems = elem.getchildren()
     extras = []
+    extra_tuples = set()
 
     for sub_elem in sub_elems:
         sub_name = sub_elem.tag
@@ -102,7 +104,11 @@ def process_db_sub_elems(elem, elem_fields):
             attributes = sub_elem.attrib
             for a in attributes:
                 extra["elements"][a] = attributes[a]
-            extras.append(extra)
+            table_tuple = namedtuple(table_name, extra["elements"].keys())
+            extra_tuple = table_tuple(**extra["elements"])
+            if not extra_tuple in extra_tuples:
+                extras.append(extra)
+                extra_tuples.add(extra_tuple)
         else:
             elem_dict[sub_name] = sub_elem.text
     return elem_dict, extras
